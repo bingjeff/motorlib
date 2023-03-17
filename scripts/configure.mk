@@ -91,6 +91,7 @@ actuator.cpp\
 fast_loop.cpp\
 foc.cpp\
 gpio.cpp\
+main_loop.cpp\
 sincos.cpp\
 util.cpp\
 hall.cpp\
