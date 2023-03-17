@@ -1,11 +1,9 @@
 #ifndef UNHUMAN_MOTORLIB_ACTUATOR_H_
 #define UNHUMAN_MOTORLIB_ACTUATOR_H_
 
-#include "control_fun.h"
 #include "fast_loop.h"
 #include "main_loop.h"
 #include "messages.h"
-#include "util.h"
 
 extern "C" {
 void system_init();
@@ -32,110 +30,5 @@ class Actuator {
   friend void system_init();
   friend void config_init();
 };
-
-// === Implementation ===
-void Actuator::start() {
-  if (!startup_param_.no_driver_enable) {
-    main_loop_.driver_.enable();
-    main_loop_.set_mode(CLEAR_FAULTS);
-  }
-
-  main_loop_.set_rollover(fast_loop_.get_rollover());
-  if (!startup_param_.no_zero_current_sensors) {
-    // zero current sensors in voltage mode to try to eliminate bias from pwm
-    // noise, could also do open mode
-    fast_loop_.voltage_mode();
-    fast_loop_.zero_current_sensors_on(2);
-    ms_delay(2001);
-  } else {
-    // needs some time to measure bus voltage
-    ms_delay(10);
-  }
-  set_bias();
-
-  if (startup_param_.do_phase_lock) {
-    fast_loop_.maintenance();
-    fast_loop_.phase_lock_mode(startup_param_.phase_lock_current);
-    ms_delay(1000 * startup_param_.phase_lock_duration);
-  }
-  fast_loop_
-      .maintenance();  // TODO better way than calling this to update zero pos
-  fast_loop_.voltage_mode();
-  main_loop_.set_mode(startup_param_.startup_mode);
-  fast_loop_.set_iq_des(0);
-  main_loop_.set_started();
-}
-void Actuator::enable_driver() {
-  if (main_loop_.status_.fast_loop.vbus > main_loop_.param_.vbus_min &&
-      main_loop_.status_.fast_loop.vbus < main_loop_.param_.vbus_max) {
-    main_loop_.driver_.enable();
-  }
-  main_loop_.set_mode(CLEAR_FAULTS);
-}
-void Actuator::maintenance() {
-  fast_loop_.maintenance();
-  if (main_loop_.driver_enable_triggered()) {
-    enable_driver();
-  }
-  if (main_loop_.driver_disable_triggered()) {
-    ms_delay(10);
-    main_loop_.driver_.disable();
-  }
-}
-void Actuator::set_bias() {
-  MainLoopStatus status = main_loop_.get_status();
-  if (status.output_position > startup_param_.output_encoder_rollover) {
-    main_loop_.adjust_output_encoder(-2 * M_PI);
-    status.output_position -= 2 * M_PI;
-  }
-  switch (startup_param_.motor_encoder_startup) {
-    default:
-    case StartupParam::ENCODER_ZERO:
-      break;
-    case StartupParam::ENCODER_BIAS: {
-      main_loop_.set_motor_encoder_bias(-status.motor_position +
-                                        startup_param_.motor_encoder_bias);
-      break;
-    }
-    case StartupParam::ENCODER_BIAS_FROM_OUTPUT: {
-      main_loop_.set_motor_encoder_bias(
-          status.output_position * startup_param_.gear_ratio -
-          status.fast_loop.motor_position.position +
-          startup_param_.motor_encoder_bias);
-      break;
-    }
-    case StartupParam::ENCODER_BIAS_FROM_OUTPUT_WITH_MOTOR_CORRECTION: {
-      float round_by = 2 * M_PI *
-                       (startup_param_.num_encoder_poles == 0
-                            ? 1
-                            : startup_param_.num_encoder_poles);
-      float motor_bias_from_output =
-          status.output_position * startup_param_.gear_ratio -
-          (status.fast_loop.motor_position.position +
-           startup_param_.motor_encoder_bias);
-      float motor_bias_rounded =
-          roundf(motor_bias_from_output * round_by) / (round_by);
-      main_loop_.set_motor_encoder_bias(motor_bias_rounded);
-      break;
-    }
-    case StartupParam::
-        ENCODER_BIAS_FROM_OUTPUT_WITH_TORQUE_AND_MOTOR_CORRECTION: {
-      float round_by = 2 * M_PI *
-                       (startup_param_.num_encoder_poles == 0
-                            ? 1
-                            : startup_param_.num_encoder_poles);
-      float motor_bias_from_output =
-          (status.output_position -
-           status.torque * startup_param_.transmission_stiffness) *
-              startup_param_.gear_ratio -
-          (status.fast_loop.motor_position.position +
-           startup_param_.motor_encoder_bias);
-      float motor_bias_rounded =
-          roundf(motor_bias_from_output * round_by) / (round_by);
-      main_loop_.set_motor_encoder_bias(motor_bias_rounded);
-      break;
-    }
-  }
-}
 
 #endif  // UNHUMAN_MOTORLIB_ACTUATOR_H_

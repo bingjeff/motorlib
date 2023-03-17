@@ -1,5 +1,5 @@
 #######################################
-# paths
+# Path setup
 #######################################
 # Requires PARAM_FILE, CONFIG_FILE, and TARGET_MCU defined
 
@@ -15,15 +15,19 @@ endif
 
 $(info target is $(TARGET_MCU))
 
+######################################
+# TARGET_MCU setup
+######################################
+
 ifeq "$(TARGET_MCU)" "stm32g474"
 
 ifndef DRIVERS
 DRIVERS = ../boost_g474/Drivers
 endif
 
-######################################
+# -----------------------------
 # source
-######################################
+# -----------------------------
 # C sources
 C_SOURCES =  \
 Src/main.c \
@@ -70,15 +74,20 @@ C_INCLUDES =  \
 -I$(DRIVERS)/CMSIS/Device/ST/STM32G4xx/Include \
 -I$(DRIVERS)/CMSIS/Include
 
-#######################################
+# -----------------------------
 # LDFLAGS
-#######################################
+# -----------------------------
 # link script
 LDSCRIPT = $(SELF_DIR)../peripheral/stm32g4/STM32G474RETx_FLASH.ld
 endif # TARGET_MCU
 
+#######################################
+# Motorlib sources setup
+#######################################
+
 CPP_SOURCES = \
 $(SELF_DIR)../control_fun.cpp\
+actuator.cpp\
 foc.cpp\
 gpio.cpp\
 sincos.cpp\
