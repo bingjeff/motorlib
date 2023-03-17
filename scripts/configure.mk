@@ -88,6 +88,7 @@ endif # TARGET_MCU
 CPP_SOURCES = \
 $(SELF_DIR)../control_fun.cpp\
 actuator.cpp\
+fast_loop.cpp\
 foc.cpp\
 gpio.cpp\
 sincos.cpp\
