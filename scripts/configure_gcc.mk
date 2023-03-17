@@ -56,7 +56,7 @@ endif
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
-CPPFLAGS = $(CFLAGS)
+CPPFLAGS = -DM_PI=3.14159265358979323846 $(CFLAGS)
 
 # libraries
 LIBS = -lc -lm -lnosys 
