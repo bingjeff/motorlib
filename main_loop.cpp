@@ -22,6 +22,7 @@ void load_send_data(const MainLoop &main_loop, SendData *const data) {
 }
 #endif  // CUSTOM_SENDDATA
 
+HardwareBrakeBase MainLoop::no_brake_ = {};
 MainLoop::MainLoop(FastLoop &fast_loop, PositionController &position_controller,
                    TorqueController &torque_controller,
                    ImpedanceController &impedance_controller,
