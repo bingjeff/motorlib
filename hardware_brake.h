@@ -5,8 +5,8 @@
 
 class HardwareBrakeBase {
  public:
-    void on() {}
-    void off() {}
+    virtual void on() {}
+    virtual void off() {}
 };
 
 #endif  // UNHUMAN_MOTORLIB_HARDWARE_BRAKE_H_
