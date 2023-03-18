@@ -94,6 +94,7 @@ foc.cpp\
 gpio.cpp\
 main_loop.cpp\
 sincos.cpp\
+system.cpp\
 util.cpp\
 hall.cpp\
 $(SELF_DIR)../peripheral/spi_encoder.cpp\

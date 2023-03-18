@@ -27,7 +27,6 @@ void system_init();
 void setup_sleep();
 void finish_sleep();
 
-
 class MainLoop {
  public:
   MainLoop(FastLoop &fast_loop, PositionController &position_controller,
@@ -37,9 +36,10 @@ class MainLoop {
            StateController &state_controller,
            JointPositionController &joint_position_controller,
            CommunicationBase &communication, LED &led,
-           EncoderBase &output_encoder, TorqueSensorBase &torque, DriverBase &driver,
-           Logger &logger, RoundRobinLogger &round_robin_logger,
-           const MainLoopParam &param, HardwareBrakeBase &brake = no_brake_);
+           EncoderBase &output_encoder, TorqueSensorBase &torque,
+           DriverBase &driver, Logger &logger,
+           RoundRobinLogger &round_robin_logger, const MainLoopParam &param,
+           HardwareBrakeBase &brake = no_brake_);
   void init() {}
   void update();
 
