@@ -10,6 +10,8 @@ void fast_loop_interrupt() { System::get_instance().fast_loop_interrupt(); }
 
 void system_log(std::string s) { System::get_instance().log(s); }
 
+System* System::singleton_ = nullptr;
+
 System::System(std::unique_ptr<Actuator> actuator,
                std::unique_ptr<CommunicationBase> communication,
                std::unique_ptr<Logger> logger,
@@ -298,7 +300,8 @@ void System::run() {
       new const APIUint32(&actuator_->main_loop_.status_.fast_loop.energy_uJ));
   api_.add_api_variable(
       "fast_log", new const APICallback([&]() {
-        logger_->log_printf("timestamp, position, ia, ib, ic, va, vb, vc, vbus");
+        logger_->log_printf(
+            "timestamp, position, ia, ib, ic, va, vb, vc, vbus");
         for (int i = 0; i < 100; i++) {
           FastLoopStatus& status = actuator_->fast_loop_.status_log_.next();
           logger_->log_printf(
