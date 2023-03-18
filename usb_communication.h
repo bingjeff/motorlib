@@ -29,6 +29,8 @@ class USBCommunication : public CommunicationBase {
   bool send_string_active() const { return usb_.tx_active(1); }
   void cancel_send_string() { usb_.cancel_transfer(1); }
 
+  uint32_t get_error_count() { return usb_.get_error_count(); }
+
  private:
   USB1 &usb_;
   friend class System;
