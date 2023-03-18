@@ -23,7 +23,7 @@ class I2CTorque final : public TorqueSensorBase {
             ms_delay(1);
     }
 
-    void trigger() {
+    void trigger() override {
         count_++;
         if (count_ < decimation_) {
             return;
@@ -35,7 +35,7 @@ class I2CTorque final : public TorqueSensorBase {
        i2c_.async_read(address_, 6*4, data_in_);
     }
 
-    float read() {
+    float read() override {
         if (count_ == 0) {
             // wait until dma complete
             bool ready = wait_while_false_with_timeout_us(i2c_.ready(), timeout_us_);
@@ -55,6 +55,7 @@ class I2CTorque final : public TorqueSensorBase {
         return torque_;
     }
 
+    float get_value() const override { return torque_; }
 
  private:
     I2C_DMA &i2c_;

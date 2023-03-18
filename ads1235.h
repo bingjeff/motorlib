@@ -25,8 +25,8 @@ class ADS1235 : public TorqueSensorBase {
           volatile int *register_operation = nullptr);
   void constructor_init(SPS sps);
   uint32_t init();
-  void trigger();
-  float read();
+  void trigger() override;
+  float read() override;
 
   volatile int *register_operation_ = &register_operation_local_;
 

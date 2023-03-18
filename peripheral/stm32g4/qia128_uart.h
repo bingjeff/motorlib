@@ -102,7 +102,7 @@ class QIA128_UART : public TorqueSensorBase {
         regs_.RQR = USART_RQR_RXFRQ;
     }
 
-    float read() {
+    float read() override {
         if (state_ == WAIT) {
             // read character
             if (regs_.ISR & USART_ISR_RXNE) {
@@ -153,7 +153,7 @@ class QIA128_UART : public TorqueSensorBase {
         }
         return torque_;
     }
-    float get_value() const { return torque_; }
+    float get_value() const override { return torque_; }
     float torque_ = 0;
     uint32_t offset_ = 0;
     uint32_t full_scale_ = 0;

@@ -9,8 +9,8 @@ class ADS1235_2 : public ADS1235 {
   ADS1235_2(SPIDMA& spidma, volatile int* register_operation = nullptr)
       : ADS1235(spidma, PGAGain::GAIN_128, SPS::SPS_1200, register_operation) {}
   uint32_t init();
-  void trigger();
-  float read();
+  void trigger() override;
+  float read() override;
 
  private:
   float torque1_ = 0;
