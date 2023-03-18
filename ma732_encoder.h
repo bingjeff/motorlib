@@ -23,7 +23,7 @@ class MA732Encoder : public SPIEncoder {
         reinit();
     }
 
-    void reinit() {
+    void reinit() override {
         if (!*register_operation_) {
 #ifdef STM32F446xx
             regs_.CR1 = SPI_CR1_MSTR | (3 << SPI_CR1_BR_Pos) | SPI_CR1_SSI | SPI_CR1_SSM | SPI_CR1_SPE | SPI_CR1_DFF;    // baud = clock/16, 16 bit
@@ -36,14 +36,14 @@ class MA732Encoder : public SPIEncoder {
     }
 
     // interrupt context
-    void trigger()  __attribute__((section (".ccmram"))) {
+    void trigger() override __attribute__((section (".ccmram"))) {
         if (!*register_operation_) {
             SPIEncoder::trigger();
         }
     }
 
     // interrupt context   
-    int32_t read()  __attribute__((section (".ccmram"))) {
+    int32_t read() override  __attribute__((section (".ccmram"))) {
         if (!*register_operation_) {
             SPIEncoder::read();
             count_ += (int16_t) (data_ - last_data_); // rollover summing
@@ -119,7 +119,7 @@ class MA732Encoder : public SPIEncoder {
     // min mT is 40 which is step 2 in MGT. I combine the two readings like this
     // (mght << 0 | (uint16_t) mglt << 8), so the minimum recommended value is about
     // 0x202 or 514.
-    uint32_t get_magnetic_field_strength() {
+    virtual uint32_t get_magnetic_field_strength() {
         uint8_t original_mgt = read_register(0x6);
         uint8_t mght = 0, mglt = 0;
         for (uint8_t i=0; i<8; i++) {
@@ -141,9 +141,9 @@ class MA732Encoder : public SPIEncoder {
         return (mght << 0 | (uint16_t) mglt << 8);
     }
 
-    int32_t get_value()  const __attribute__((section (".ccmram"))) { return count_; }
+    int32_t get_value() const override __attribute__((section (".ccmram"))) { return count_; }
 
-    bool init() {
+    bool init() override {
         // filter frequency
         bool success = set_register(0xE, filter_);
         return success;

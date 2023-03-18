@@ -12,13 +12,13 @@ class MA782Encoder final : public MA732Encoder {
     MA782Encoder(SPI_TypeDef &regs, GPIO &gpio_cs, uint8_t filter = _512, volatile int *register_operation = nullptr) : 
         MA732Encoder(regs, gpio_cs, filter, register_operation) {}
     
-    virtual void set_filt(uint32_t value) override {
+    void set_filt(uint32_t value) override {
         set_register(0xE, value << 4);
     }
 
     // see ma732_encoder get_magnetic_field strength
     // difference is set_register(0x6, original_mgt | 1);
-    uint32_t get_magnetic_field_strength() {
+    uint32_t get_magnetic_field_strength() override {
         uint8_t original_mgt = read_register(0x6);
         uint8_t mght = 0, mglt = 0;
         for (uint8_t i=0; i<8; i++) {
@@ -46,7 +46,7 @@ class MA782Encoder final : public MA732Encoder {
     }
 
         // difference to ma732 is send_and_read(0) & 0xFF
-    virtual uint8_t read_register(uint8_t address) override {
+    uint8_t read_register(uint8_t address) override {
         reinit(); // only really necessary if there are multiple users of the spi
         (*register_operation_)++;
         MA732reg reg = {};
