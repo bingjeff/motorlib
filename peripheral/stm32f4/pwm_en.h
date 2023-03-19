@@ -16,12 +16,12 @@ class PWM_EN final : public PWMBase {
       set_frequency_hz(frequency_hz);
       set_vbus(12);
    } 
-   void set_voltage(float v_abc[3])  __attribute__((section (".ccmram")));
-   void set_vbus(float vbus);
-   void open_mode();
-   void brake_mode();
-   void voltage_mode();
-   void set_frequency_hz(uint32_t frequency_hz);
+   void set_voltage(float v_abc[3]) override  __attribute__((section (".ccmram")));
+   void set_vbus(float vbus) override;
+   void open_mode() override;
+   void brake_mode() override;
+   void voltage_mode() override;
+   void set_frequency_hz(uint32_t frequency_hz) override;
  private:
    uint16_t period_, half_period_;
    uint32_t &pwm_a_, &pwm_b_, &pwm_c_;
