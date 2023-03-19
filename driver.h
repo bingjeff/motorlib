@@ -3,10 +3,10 @@
 
 class DriverBase {
  public:
-    void enable() { enabled_ = true; }
-    void disable() { enabled_ = false; }
-    bool is_enabled() const { return enabled_; }
-    bool is_faulted() const { return false; }
+    virtual void enable() { enabled_ = true; }
+    virtual void disable() { enabled_ = false; }
+    virtual bool is_enabled() const { return enabled_; }
+    virtual bool is_faulted() const { return false; }
  private:
     bool enabled_ = false;
 };

@@ -43,7 +43,7 @@ class DRV8323S : public DriverBase {
     (*register_operation_)--;
   }
 
-  void disable() {
+  void disable() override {
     uint32_t status = get_drv_status();
     logger_.log_printf("drv8323 disabled, status: %04x", status);
     logger_.log("drv disable");
@@ -51,7 +51,7 @@ class DRV8323S : public DriverBase {
     DriverBase::disable();
   }
 
-  void enable() {
+  void enable() override {
     GPIOC->BSRR = GPIO_BSRR_BS13;  // drv enable
     ms_delay(10);
 
